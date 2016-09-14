@@ -3,8 +3,8 @@ request = require('request')
 CronJob = require('cron').CronJob
 CHANNEL_LIST_URL = 'https://slack.com/api/channels.list?token=' + process.env.HUBOT_SLACK_TOKEN
 
-#CHANNEL = "general"
-CHANNEL = "chocola_test"
+CHANNEL = "general"
+#CHANNEL = "chocola_test"
 
 
 
@@ -153,6 +153,8 @@ module.exports = (robot) ->
         resMsg += '  - KPTを表示します\n'
         resMsg += '@chocola kpt delete [KPT名]\n'
         resMsg += '  - KPTを削除します\n'
+        resMsg += '@chocola kpt remind [KPT名]\n'
+        resMsg += '  - 毎日リマインドするKPTを設定します\n'
         resMsg += '```'
         msg.reply resMsg
 
