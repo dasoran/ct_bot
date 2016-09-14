@@ -11,7 +11,7 @@ CHANNEL = "general"
 
 module.exports = (robot) ->
   request CHANNEL_LIST_URL, (err, res, body) ->
-    new CronJob '0 * * * * *', () ->
+    new CronJob '0 0 10 * * *', () ->
       channelId = findChannelId(JSON.parse(body).channels, CHANNEL)
       kptTitle = robot.brain.get('kpt_remind')
       kptTry = robot.brain.get(kptTitle + '-try')
