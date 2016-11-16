@@ -24,7 +24,7 @@ module.exports = (robot) ->
       channel = findChannel(JSON.parse(body).channels, msg.envelope.room)
       if (channel is CHANNEL)
         date = new Date()
-        kptTitle = 'kpt-' + date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDay()
+        kptTitle = 'kpt-' + date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate()
         kptTitleListJson = robot.brain.get('kpt_title_list')
         if kptTitleListJson is null
           kptTitleList = Array()
