@@ -1,14 +1,32 @@
-progress = [
-  'http://livedoor.blogimg.jp/matometters/imgs/4/c/4cc416b4.jpg'
-  'http://forum.shimarin.com/uploads/default/3/5a6b5c05cceb7cf3.png'
-  'http://37.media.tumblr.com/3497ded6d8b569cfe0d0152f8fc6bc9d/tumblr_mzyaeoXEIS1sckns5o1_500.jpg'
-  'http://forum.shimarin.com/uploads/default/6/8b3c7003765d0f2e.jpg'
-  'http://38.media.tumblr.com/31ab4065305e3607b951332dde32b789/tumblr_mrkrlyMMIU1sckns5o1_500.jpg'
-]
 
+request = require('request')
+fs = require('fs')
+exec = require('child_process').exec
 
+CHANNEL_LIST_URL = 'https://slack.com/api/channels.list?token=' + process.env.HUBOT_SLACK_TOKEN
+SINCHOKU_PATH ="sinchoku_pict"
 
 module.exports = (robot) ->
   robot.hear /^進捗どう(ですか?)?/, (msg) ->
-    msg.send msg.random progress
+    fs.readdir SINCHOKU_PATH, (err, files) ->
+      if err
+        throw err
+      fileList = []
+      files.filter((file) ->
+          return fs.statSync(SINCHOKU_PATH + '/' + file).isFile() && /.*\.jpg$/.test(file)
+      ).forEach((file) ->
+          fileList.push(file)
+      )
+      filename = msg.random fileList
+      request CHANNEL_LIST_URL, (err, res, body) ->
+        channel = findChannel(JSON.parse(body).channels, msg.envelope.room)
+        exec "curl -F file=@#{SINCHOKU_PATH}/#{filename} -F channels=#{channel} -F token=#{process.env.HUBOT_SLACK_TOKEN} https://slack.com/api/files.upload", (err, stdout, stderr) ->
+          if err
+            console.log(err,stdout,stderr)
 
+findChannel = (channels, targetName) ->
+  for channel_id of channels
+    channel = channels[channel_id]
+    if channel.id == targetName
+      return channel.name
+  return null
